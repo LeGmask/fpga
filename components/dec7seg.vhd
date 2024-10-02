@@ -1,77 +1,77 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.std_logic_arith.all;
-use IEEE.std_logic_unsigned.all;
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+USE IEEE.std_logic_arith.ALL;
+USE IEEE.std_logic_unsigned.ALL;
 
-entity dec7seg is
-  port (
-    v   : in std_logic_vector(3 downto 0);
-    dot : in std_logic;
-    seg : out std_logic_vector (7 downto 0)
-  );
-end dec7seg;
+ENTITY dec7seg IS
+	PORT (
+		v   : IN  STD_LOGIC_VECTOR(3 DOWNTO 0);
+		dot : IN  STD_LOGIC;
+		seg : OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
+	);
+END dec7seg;
 
-architecture synthesis of dec7seg is
+ARCHITECTURE synthesis OF dec7seg IS
 
-  signal s : std_logic_vector (7 downto 0);
+	SIGNAL s : STD_LOGIC_VECTOR (7 DOWNTO 0);
 
-begin
+BEGIN
 
---  s <= "00111111" when value =  0 else
---       "00000110" when value =  1 else
---       "01011011" when value =  2 else
---       "01001111" when value =  3 else
---       "01100110" when value =  4 else
---       "01101101" when value =  5 else
---       "01111101" when value =  6 else
---       "00000111" when value =  7 else
---       "01111111" when value =  8 else
---       "01101111" when value =  9 else
---       "01110111" when value = 10 else
---       "01111100" when value = 11 else
---       "00111001" when value = 12 else
---       "01011110" when value = 13 else
---       "01111001" when value = 14 else
---       "01110001";
+	--  s <= "00111111" when value =  0 else
+	--       "00000110" when value =  1 else
+	--       "01011011" when value =  2 else
+	--       "01001111" when value =  3 else
+	--       "01100110" when value =  4 else
+	--       "01101101" when value =  5 else
+	--       "01111101" when value =  6 else
+	--       "00000111" when value =  7 else
+	--       "01111111" when value =  8 else
+	--       "01101111" when value =  9 else
+	--       "01110111" when value = 10 else
+	--       "01111100" when value = 11 else
+	--       "00111001" when value = 12 else
+	--       "01011110" when value = 13 else
+	--       "01111001" when value = 14 else
+	--       "01110001";
 
-  s(7) <= dot;
+	s(7) <= dot;
 
-  s(6) <= (v(1) and (v(3) or not v(2) or not v(0))) or 
-          (v(3) and v(0)) or
-          (not v(1) and (v(3) xor v(2))); 
-  
-  s(5) <= (v(3) and not v(2)) or
-          not(v(1) or v(0)) or
-          (not v(1) and (v(3) xor v(2))) or
-          (v(3) and v(1)) or 
-          (v(2) and not v(0));
+	s(6) <= (v(1) AND (v(3) OR NOT v(2) OR NOT v(0))) OR
+		(v(3) AND v(0)) OR
+		(NOT v(1) AND (v(3) XOR v(2)));
 
-  s(4) <= not(v(2) or v(0)) or
-          (v(1) and not v(0)) or
-          (v(3) and (v(2) or v(1)));
+	s(5) <= (v(3) AND NOT v(2)) OR
+		NOT(v(1) OR v(0)) OR
+		(NOT v(1) AND (v(3) XOR v(2))) OR
+		(v(3) AND v(1)) OR
+		(v(2) AND NOT v(0));
 
-  s(3) <= (v(3) and not v(1)) or
-          not(v(3) or v(2) or v(0)) or
-          (v(2) and (v(1) xor v(0))) or
-          (not v(2) and v(1) and v(0));
+	s(4) <= NOT(v(2) OR v(0)) OR
+		(v(1) AND NOT v(0)) OR
+		(v(3) AND (v(2) OR v(1)));
 
-  s(2) <= (v(3) xor v(2)) or
-          (not v(1) and v(0)) or
-          (not(v(1) xor v(0)) and not v(2));
+	s(3) <= (v(3) AND NOT v(1)) OR
+		NOT(v(3) OR v(2) OR v(0)) OR
+		(v(2) AND (v(1) XOR v(0))) OR
+		(NOT v(2) AND v(1) AND v(0));
 
-  s(1) <= not(v(3) or v(2)) or
-          not(v(2) or v(1)) or
-          not(v(2) or v(0)) or 
-          (not v(3) and not(v(1) xor v(0))) or
-          (v(3) and not v(1) and v(0));
+	s(2) <= (v(3) XOR v(2)) OR
+		(NOT v(1) AND v(0)) OR
+		(NOT(v(1) XOR v(0)) AND NOT v(2));
 
-  s(0) <= (not v(3) and v(1)) or 
-          (v(3) and not v(0)) or 
-          (v(2) and v(1)) or 
-          not (v(2) or v(0)) or
-          (v(3) and not v(2) and not v(1)) or
-          (not v(3) and v(2) and v(0));
+	s(1) <= NOT(v(3) OR v(2)) OR
+		NOT(v(2) OR v(1)) OR
+		NOT(v(2) OR v(0)) OR
+		(NOT v(3) AND NOT(v(1) XOR v(0))) OR
+		(v(3) AND NOT v(1) AND v(0));
 
-  seg <= not s;
+	s(0) <= (NOT v(3) AND v(1)) OR
+		(v(3) AND NOT v(0)) OR
+		(v(2) AND v(1)) OR
+		NOT (v(2) OR v(0)) OR
+		(v(3) AND NOT v(2) AND NOT v(1)) OR
+		(NOT v(3) AND v(2) AND v(0));
 
-end synthesis;
+	seg <= NOT s;
+
+END synthesis;

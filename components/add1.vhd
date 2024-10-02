@@ -1,23 +1,23 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
 
 -- interface du composant additionneur
-entity add1 is
-  port(
-       X, Y, Cin    : in std_logic;
-       S, Cout    : out std_logic
-      );
-end add1;
+ENTITY add1 IS
+	PORT (
+		X, Y, Cin : IN  STD_LOGIC;
+		S, Cout   : OUT STD_LOGIC
+	);
+END add1;
 
-architecture vue_flot of add1 is
-  constant delay : time := 2 ns;
+ARCHITECTURE vue_flot OF add1 IS
+	CONSTANT delay : TIME := 2 ns;
 
-  -- signal local
-  signal i : std_logic;
-begin
-  -- 3 équations logiques qui calculent i, Cout et S ==
-  -- 3 instructions concurrentes
-  S <= i xor Cin after delay;
-  Cout <= (X and Y) or (i and Cin) after 2*delay;
-  i <= X xor Y after delay;
-end vue_flot;
+	-- signal local
+	SIGNAL i : STD_LOGIC;
+BEGIN
+	-- 3 équations logiques qui calculent i, Cout et S ==
+	-- 3 instructions concurrentes
+	S    <= i XOR Cin AFTER delay;
+	Cout <= (X AND Y) OR (i AND Cin) AFTER 2 * delay;
+	i    <= X XOR Y AFTER delay;
+END vue_flot;
