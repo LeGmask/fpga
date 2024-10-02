@@ -80,19 +80,16 @@ export XILINX
 # Default build
 ###########################################################################
 
-default: build
+default: $(BITFILE)
 
 rsync:
 	rsync -avp --delete --exclude 'build' --exclude '.git' . $(SSH_HOST):$(SSH_PATH)
 
-build: rsync
-	ssh $(SSH_HOST) -- "cd $(SSH_PATH) && make $(BITFILE) PROJECT_PATH=$(PROJECT_PATH)"
-
-clean: 
-	ssh $(SSH_HOST) "rm -rf $(SSH_PATH)/build"
+clean: ssh/clean
+	rm -rf build
 
 prog: $(BITFILE)
-	$(DJTG_EXE) prog -d $(DJTG_DEVICE) -i $(DJTG_INDEX) -f $(BITFILE)
+	@echo $(DJTG_EXE) prog -d $(DJTG_DEVICE) -i $(DJTG_INDEX) -f $(BITFILE)
 
 build/$(PROJECT).prj: $(PROJECT_PATH)/project.cfg
 	@echo "Updating $@"
@@ -121,7 +118,13 @@ build/$(PROJECT).scr: $(PROJECT_PATH)/project.cfg
 	    "-p $(TARGET_PART)" \
 	    > build/$(PROJECT).scr
 
-$(BITFILE): $(PROJECT_PATH)/project.cfg $(VSOURCE) $(CONSTRAINTS) build/$(PROJECT).prj build/$(PROJECT).scr
+$(BITFILE): rsync
+	@echo "Building $(BITFILE)"
+	@mkdir -p build
+	ssh $(SSH_HOST) -- "cd $(SSH_PATH) && make ssh/$(BITFILE) PROJECT_PATH=$(PROJECT_PATH)"
+	scp $(SSH_HOST):$(SSH_PATH)/$(BITFILE) $(BITFILE)
+
+ssh/$(BITFILE): $(PROJECT_PATH)/project.cfg $(VSOURCE) $(CONSTRAINTS) build/$(PROJECT).prj build/$(PROJECT).scr
 	@mkdir -p build
 	$(call RUN,xst) $(COMMON_OPTS) \
 	    -ifn $(PROJECT).scr
@@ -136,3 +139,6 @@ $(BITFILE): $(PROJECT_PATH)/project.cfg $(VSOURCE) $(CONSTRAINTS) build/$(PROJEC
 	$(call RUN,bitgen) $(COMMON_OPTS) $(BITGEN_OPTS) \
 	    -w $(PROJECT).ncd $(PROJECT).bit
 	@echo "\e[1;32m======== OK ========\e[m\n"
+
+ssh/clean:
+	ssh $(SSH_HOST) "cd $(SSH_PATH) && rm -rf build"
