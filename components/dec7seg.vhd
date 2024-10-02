@@ -5,8 +5,8 @@ USE IEEE.std_logic_unsigned.ALL;
 
 ENTITY dec7seg IS
 	PORT (
-		v   : IN  STD_LOGIC_VECTOR(3 DOWNTO 0);
-		dot : IN  STD_LOGIC;
+		v   : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+		dot : IN STD_LOGIC;
 		seg : OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
 	);
 END dec7seg;
@@ -37,40 +37,40 @@ BEGIN
 	s(7) <= dot;
 
 	s(6) <= (v(1) AND (v(3) OR NOT v(2) OR NOT v(0))) OR
-		(v(3) AND v(0)) OR
-		(NOT v(1) AND (v(3) XOR v(2)));
+	(v(3) AND v(0)) OR
+	(NOT v(1) AND (v(3) XOR v(2)));
 
 	s(5) <= (v(3) AND NOT v(2)) OR
-		NOT(v(1) OR v(0)) OR
-		(NOT v(1) AND (v(3) XOR v(2))) OR
-		(v(3) AND v(1)) OR
-		(v(2) AND NOT v(0));
+	NOT(v(1) OR v(0)) OR
+	(NOT v(1) AND (v(3) XOR v(2))) OR
+	(v(3) AND v(1)) OR
+	(v(2) AND NOT v(0));
 
 	s(4) <= NOT(v(2) OR v(0)) OR
-		(v(1) AND NOT v(0)) OR
-		(v(3) AND (v(2) OR v(1)));
+	(v(1) AND NOT v(0)) OR
+	(v(3) AND (v(2) OR v(1)));
 
 	s(3) <= (v(3) AND NOT v(1)) OR
-		NOT(v(3) OR v(2) OR v(0)) OR
-		(v(2) AND (v(1) XOR v(0))) OR
-		(NOT v(2) AND v(1) AND v(0));
+	NOT(v(3) OR v(2) OR v(0)) OR
+	(v(2) AND (v(1) XOR v(0))) OR
+	(NOT v(2) AND v(1) AND v(0));
 
 	s(2) <= (v(3) XOR v(2)) OR
-		(NOT v(1) AND v(0)) OR
-		(NOT(v(1) XOR v(0)) AND NOT v(2));
+	(NOT v(1) AND v(0)) OR
+	(NOT(v(1) XOR v(0)) AND NOT v(2));
 
 	s(1) <= NOT(v(3) OR v(2)) OR
-		NOT(v(2) OR v(1)) OR
-		NOT(v(2) OR v(0)) OR
-		(NOT v(3) AND NOT(v(1) XOR v(0))) OR
-		(v(3) AND NOT v(1) AND v(0));
+	NOT(v(2) OR v(1)) OR
+	NOT(v(2) OR v(0)) OR
+	(NOT v(3) AND NOT(v(1) XOR v(0))) OR
+	(v(3) AND NOT v(1) AND v(0));
 
 	s(0) <= (NOT v(3) AND v(1)) OR
-		(v(3) AND NOT v(0)) OR
-		(v(2) AND v(1)) OR
-		NOT (v(2) OR v(0)) OR
-		(v(3) AND NOT v(2) AND NOT v(1)) OR
-		(NOT v(3) AND v(2) AND v(0));
+	(v(3) AND NOT v(0)) OR
+	(v(2) AND v(1)) OR
+	NOT (v(2) OR v(0)) OR
+	(v(3) AND NOT v(2) AND NOT v(1)) OR
+	(NOT v(3) AND v(2) AND v(0));
 
 	seg <= NOT s;
 

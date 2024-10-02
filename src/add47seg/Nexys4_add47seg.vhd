@@ -23,8 +23,8 @@ END add47seg;
 ARCHITECTURE synthesis OF add47seg IS
 	COMPONENT add4
 		PORT (
-			X, Y : IN  STD_LOGIC_VECTOR (3 DOWNTO 0);
-			Cin  : IN  STD_LOGIC;
+			X, Y : IN STD_LOGIC_VECTOR (3 DOWNTO 0);
+			Cin  : IN STD_LOGIC;
 			S    : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
 			Cout : OUT STD_LOGIC
 		);
@@ -32,8 +32,8 @@ ARCHITECTURE synthesis OF add47seg IS
 
 	COMPONENT dec7seg
 		PORT (
-			v   : IN  STD_LOGIC_VECTOR(3 DOWNTO 0);
-			dot : IN  STD_LOGIC;
+			v   : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+			dot : IN STD_LOGIC;
 			seg : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
 		);
 	END COMPONENT;

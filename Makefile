@@ -89,7 +89,7 @@ clean: ssh/clean
 	rm -rf build
 
 prog: $(BITFILE)
-	@echo $(DJTG_EXE) prog -d $(DJTG_DEVICE) -i $(DJTG_INDEX) -f $(BITFILE)
+	djtgcfg prog -d $(DJTG_DEVICE) -i $(DJTG_INDEX) -f $(BITFILE)
 
 build/$(PROJECT).prj: $(PROJECT_PATH)/project.cfg
 	@echo "Updating $@"
