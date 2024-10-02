@@ -91,6 +91,9 @@ build: rsync
 clean: 
 	ssh $(SSH_HOST) "rm -rf $(SSH_PATH)/build"
 
+prog: $(BITFILE)
+	$(DJTG_EXE) prog -d $(DJTG_DEVICE) -i $(DJTG_INDEX) -f $(BITFILE)
+
 build/$(PROJECT).prj: $(PROJECT_PATH)/project.cfg
 	@echo "Updating $@"
 	@mkdir -p build
@@ -133,60 +136,3 @@ $(BITFILE): $(PROJECT_PATH)/project.cfg $(VSOURCE) $(CONSTRAINTS) build/$(PROJEC
 	$(call RUN,bitgen) $(COMMON_OPTS) $(BITGEN_OPTS) \
 	    -w $(PROJECT).ncd $(PROJECT).bit
 	@echo "\e[1;32m======== OK ========\e[m\n"
-
-
-###########################################################################
-# Testing (work in progress)
-###########################################################################
-
-trace: project.cfg $(BITFILE)
-	$(call RUN,trce) $(COMMON_OPTS) $(TRACE_OPTS) \
-	    $(PROJECT).ncd $(PROJECT).pcf
-
-test: $(TEST_EXES)
-
-build/isim_%$(EXE): build/$(PROJECT)_sim.prj $(PROJECT_PATH)/$(VSOURCE) $(PROJECT_PATH)/$(VHDSOURCE) $(VTEST) $(VHDTEST)
-	$(call RUN,fuse) $(COMMON_OPTS) $(FUSE_OPTS) \
-	    -prj $(PROJECT)_sim.prj \
-	    -o isim_$*$(EXE) \
-	    work.$* work.glbl
-
-isim: build/isim_$(TB)$(EXE)
-	@grep --no-filename --no-messages 'ISIM:' $(TB).{v,vhd} | cut -d: -f2 > build/isim_$(TB).cmd
-	@echo "run all" >> build/isim_$(TB).cmd
-	cd build ; ./isim_$(TB)$(EXE) -tclbatch isim_$(TB).cmd
-
-isimgui: build/isim_$(TB)$(EXE)
-	@grep --no-filename --no-messages 'ISIM:' $(TB).{v,vhd} | cut -d: -f2 > build/isim_$(TB).cmd
-	@echo "run all" >> build/isim_$(TB).cmd
-	cd build ; ./isim_$(TB)$(EXE) -gui -tclbatch isim_$(TB).cmd
-
-
-###########################################################################
-# Programming
-###########################################################################
-
-ifeq ($(PROGRAMMER), impact)
-prog: $(BITFILE)
-	$(XILINX)/bin/$(XILINX_PLATFORM)/impact $(IMPACT_OPTS)
-endif
-
-ifeq ($(PROGRAMMER), digilent)
-prog: $(BITFILE)
-	$(DJTG_EXE) prog -d $(DJTG_DEVICE) -i $(DJTG_INDEX) -f $(BITFILE)
-endif
-
-ifeq ($(PROGRAMMER), xc3sprog)
-prog: $(BITFILE)
-	$(XC3SPROG_EXE) -c $(XC3SPROG_CABLE) $(XC3SPROG_OPTS) $(BITFILE)
-endif
-
-ifeq ($(PROGRAMMER), none)
-prog:
-	$(error PROGRAMMER must be set to use 'make prog')
-endif
-
-
-###########################################################################
-
-# vim: set filetype=make: #
