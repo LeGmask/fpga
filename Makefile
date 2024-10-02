@@ -83,7 +83,7 @@ export XILINX
 default: build
 
 rsync:
-	rsync -avp --delete --exclude 'build' . $(SSH_HOST):$(SSH_PATH)
+	rsync -avp --delete --exclude 'build' --exclude '.git' . $(SSH_HOST):$(SSH_PATH)
 
 build: rsync
 	ssh $(SSH_HOST) -- "cd $(SSH_PATH) && make $(BITFILE) PROJECT_PATH=$(PROJECT_PATH)"
