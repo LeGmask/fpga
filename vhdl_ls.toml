@@ -1,0 +1,12 @@
+standard = "1993"
+
+[libraries]
+components.files = [
+  'components/*.vhd',
+  'src/*.vhd',
+  'src/*/*.vhd',
+]
+
+[lint]
+unused = 'warning' # Upgrade the 'unused' diagnostic to the 'error' severity
+unnecessary_work_library = false # Disable linting for the 'library work;' statement
