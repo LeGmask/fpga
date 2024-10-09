@@ -17,7 +17,7 @@ ENTITY compteur IS
 END ENTITY;
 
 ARCHITECTURE behavioral OF compteur IS
-	SIGNAL cpt_aux : STD_LOGIC_VECTOR(3 DOWNTO 0) := (OTHERS => '0');
+	SIGNAL cpt_aux : STD_LOGIC_VECTOR(N - 1 DOWNTO 0) := (OTHERS => '0');
 BEGIN
 	carry <= '1' WHEN cpt_aux = 0 AND reset = '1' ELSE
 		'0';
