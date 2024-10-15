@@ -1,9 +1,9 @@
-#GHDL=/mnt/n7fs/ens/tp_guivarch/opt2023/ghdl-2.0.0/bin/ghdl
 GHDL=ghdl
 GHDLFLAGS=-fsynopsys --std=08
 MODULES=\
     envoi_octet_tp.o \
-	test_envoi_octet_tp.o
+	test_envoi_octet_tp.o \
+	test_envoi_octet_tp
 
 TIME=600ns
 PLOT=output

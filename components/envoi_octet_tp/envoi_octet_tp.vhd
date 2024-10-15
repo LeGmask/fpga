@@ -15,8 +15,9 @@ END envoi_octet_tp;
 
 ARCHITECTURE Behavioral OF envoi_octet_tp IS
 
-  TYPE t_etat IS (idle, envoi_data, attente_ack);
-  SIGNAL etat : t_etat;
+  TYPE t_etat IS (idle, send_data, send_parity, attente_ack);
+  SIGNAL etat   : t_etat;
+  SIGNAL parity : STD_LOGIC;
 
 BEGIN
 
@@ -33,7 +34,7 @@ BEGIN
 
       -- les compteurs
       cpt_bit := 7;
-      cpt_ack := 5;
+      cpt_ack := 6;
 
       -- le registre d'envoi
       registre := (OTHERS => 'U');
@@ -49,6 +50,9 @@ BEGIN
 
       -- l'état
       etat <= idle;
+
+      -- bit de parité
+      parity <= '0';
 
     ELSIF (rising_edge(clk)) THEN
 
@@ -75,36 +79,47 @@ BEGIN
             -- (variable -> affectation immédiate)
             cpt_bit := 7;
 
-            -- on envoie le bit de poids fort (7)
-            -- qui est bien dans la variable registre
-            txd <= registre(cpt_bit);
+            -- -- on envoie le bit de poids fort (7)
+            -- -- qui est bien dans la variable registre
+            -- txd <= registre(cpt_bit);
+            txd    <= '0';
+            parity <= '0';
 
             -- on change d'état
-            etat <= envoi_data;
+            etat <= send_data;
 
-            -- cpt_bit variable, affectation immédiate
-            cpt_bit := cpt_bit - 1;
+            -- -- cpt_bit variable, affectation immédiate
+            -- cpt_bit := cpt_bit - 1;
 
           END IF;
 
-        WHEN envoi_data =>
+        WHEN send_data =>
 
           -- état d'envoi des données
 
           -- on envoie le bit
-          txd <= registre(cpt_bit);
+          txd    <= registre(cpt_bit);
+          parity <= parity XOR registre(cpt_bit);
 
           -- si c'était le dernier bit (0), 
           -- on a fini d'envoyer des données
           IF (cpt_bit = 0) THEN
-            -- on initialise le compteur d'attente
-            -- de la confirmation
-            cpt_ack := 5;
+
             -- on passe à l'état d'attente de la confirmation
-            etat <= attente_ack;
+            etat <= send_parity;
           ELSE
             cpt_bit := cpt_bit - 1;
           END IF;
+
+        WHEN send_parity =>
+          txd <= parity;
+
+          -- on initialise le compteur d'attente
+          -- de la confirmation
+          cpt_ack := 6;
+
+          -- on passe à l'état d'attente de la confirmation
+          etat <= attente_ack;
 
         WHEN attente_ack =>
           -- état d'attente de la confirmation
