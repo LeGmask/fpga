@@ -3,7 +3,8 @@ GHDL=ghdl
 GHDLFLAGS=-fsynopsys --std=08
 MODULES=\
     envoi_octet_td.o \
-	test_envoi_octet_td.o
+	test_envoi_octet_td.o \
+	test_envoi_octet_td
 
 TIME=600ns
 PLOT=output
