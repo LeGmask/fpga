@@ -4,7 +4,7 @@ GHDLFLAGS=-fsynopsys --std=08
 MODULES=\
     er_1octet.o \
 	test_er_1octet_simple.o \
-	test_er_1octet_simple
+	test_er_1octet_automate
 
 TIME=700ns
 PLOT=output
@@ -12,7 +12,7 @@ PLOT=output
 all: test clean
 
 test: $(MODULES)
-	$(GHDL) -r $(GHDLFLAGS) test_er_1octet_simple \
+	$(GHDL) -r $(GHDLFLAGS) test_er_1octet_automate \
 	--stop-time=${TIME} \
 	--vcd=${PLOT}.vcd
        
