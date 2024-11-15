@@ -19,7 +19,9 @@ ENTITY MasterOpl IS
 END MasterOpl;
 
 ARCHITECTURE behavior OF MasterOpl IS
+  -- The state of the FSM
   TYPE t_state IS (idle, sync, exchange, exchange_wait);
+  -- The signal tracking the state of the FSM
   SIGNAL state : t_state;
 
   COMPONENT er_1octet
@@ -57,18 +59,21 @@ BEGIN
   );
 
   PROCESS (clk, rst)
-    VARIABLE tick_count     : NATURAL := 0;
+    -- Variable used to count the number of clock cycles
+    VARIABLE tick_count : NATURAL := 0;
+    -- Variable to know which message we are sending
     VARIABLE exchange_count : NATURAL := 0;
-    VARIABLE isLast         : BOOLEAN := false;
-    VARIABLE sending        : BOOLEAN := false;
+    -- Variable to know if we are sending the last message
+    VARIABLE isLast : BOOLEAN := false;
+    -- Variable to know if we are sending a message
+    VARIABLE sending : BOOLEAN := false;
   BEGIN
     IF (rst = '0') THEN
+      -- We are in reset state
+      -- Reset all signals
       tick_count     := 0;
       exchange_count := 0;
       isLast         := false;
-
-      buff_v1 <= v1;
-      buff_v2 <= v2;
 
       enER  <= '0';
       busy  <= '0';
@@ -78,17 +83,22 @@ BEGIN
       CASE state IS
         WHEN idle =>
           IF (en = '1') THEN
+            -- Waking up, 
             tick_count := 0;
             busy <= '1';
             ss   <= '0';
 
+            -- Saving the data to send
             buff_v1 <= v1;
             buff_v2 <= v2;
 
+            -- Waiting for synchronization
             state <= sync;
           END IF;
 
         WHEN sync =>
+          -- This is the synchronization state
+          -- We are waiting for 10 clock cycles
           tick_count := tick_count + 1;
           IF tick_count >= 10 THEN
             tick_count := 0;
@@ -97,8 +107,13 @@ BEGIN
 
         WHEN exchange =>
           CASE exchange_count IS
-            WHEN 0 =>
-
+              -- For each exchange, we are sending a message,
+              -- First we are activating the er_1octet component by setting enER to '1'
+              -- On the next clock cycle, we are deactivating the er_1octet component by setting enER to '0'
+              -- This is used in order to avoid sending multiple messages next to each other
+              -- Once we are done with the exchange (enBusy = '0'), we are saving the value of the received message
+              -- Then we go to the exchange_wait state to wait for 3 clock cycles before sending the next message
+            WHEN 0 => -- Exchanging the first message
               IF (NOT sending) AND enER = '0' AND enBusy = '0' THEN
                 din  <= buff_v1;
                 enER <= '1';
@@ -111,7 +126,7 @@ BEGIN
                 state   <= exchange_wait;
               END IF;
 
-            WHEN 1 =>
+            WHEN 1 => -- Exchanging the second message
               IF (NOT sending) AND enER = '0' AND enBusy = '0' THEN
                 din  <= buff_v2;
                 enER <= '1';
@@ -125,8 +140,9 @@ BEGIN
                 state   <= exchange_wait;
               END IF;
 
-            WHEN 2 =>
+            WHEN 2 => -- Exchanging the third message
               IF (NOT sending) AND enER = '0' AND enBusy = '0' THEN
+                -- We are sending 0 since we are not using this value
                 din  <= "00000000";
                 enER <= '1';
                 sending := true;
@@ -140,18 +156,19 @@ BEGIN
                 state <= exchange_wait;
               END IF;
 
-            WHEN OTHERS => NULL;
+            WHEN OTHERS => NULL; -- Do nothing (should not happen)
           END CASE;
 
         WHEN exchange_wait =>
+          -- We are waiting for 3 clock cycles between each exchange
           tick_count := tick_count + 1;
           IF tick_count >= 3 THEN
             tick_count     := 0;
             exchange_count := exchange_count + 1;
 
             IF isLast THEN
-              -- On resets les différents état 
-              -- on a fini d'échanger notre message
+              -- We are done with the exchange
+              -- Reset all signals and variables
               exchange_count := 0;
               isLast         := false;
 
@@ -159,6 +176,7 @@ BEGIN
               ss    <= '1';
               state <= idle;
             ELSE
+              -- Do another exchange
               state <= exchange;
             END IF;
           END IF;
