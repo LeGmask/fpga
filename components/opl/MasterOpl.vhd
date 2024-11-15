@@ -35,10 +35,12 @@ ARCHITECTURE behavior OF MasterOpl IS
       busy : OUT STD_LOGIC);
   END COMPONENT;
 
-  SIGNAL din    : STD_LOGIC_VECTOR(7 DOWNTO 0);
-  SIGNAL dout   : STD_LOGIC_VECTOR(7 DOWNTO 0);
-  SIGNAL enER   : STD_LOGIC;
-  SIGNAL enBusy : STD_LOGIC;
+  SIGNAL din     : STD_LOGIC_VECTOR(7 DOWNTO 0);
+  SIGNAL dout    : STD_LOGIC_VECTOR(7 DOWNTO 0);
+  SIGNAL buff_v1 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+  SIGNAL buff_v2 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+  SIGNAL enER    : STD_LOGIC;
+  SIGNAL enBusy  : STD_LOGIC;
 BEGIN
 
   er_1octet_inst : er_1octet
@@ -65,6 +67,9 @@ BEGIN
       exchange_count := 0;
       isLast         := false;
 
+      buff_v1 <= v1;
+      buff_v2 <= v2;
+
       enER  <= '0';
       busy  <= '0';
       ss    <= '1';
@@ -74,8 +79,12 @@ BEGIN
         WHEN idle =>
           IF (en = '1') THEN
             tick_count := 0;
-            busy  <= '1';
-            ss    <= '0';
+            busy <= '1';
+            ss   <= '0';
+
+            buff_v1 <= v1;
+            buff_v2 <= v2;
+
             state <= sync;
           END IF;
 
@@ -90,26 +99,26 @@ BEGIN
           CASE exchange_count IS
             WHEN 0 =>
 
-              IF sending = false AND enER = '0' AND enBusy = '0' THEN
-                din  <= v1;
+              IF (NOT sending) AND enER = '0' AND enBusy = '0' THEN
+                din  <= buff_v1;
                 enER <= '1';
                 sending := true;
-              ELSIF sending = true AND enER = '1' AND enBusy = '0' THEN
+              ELSIF sending AND enER = '1' AND enBusy = '0' THEN
                 enER <= '0';
-              ELSIF sending = true AND enER = '0' AND enBusy = '0' THEN
+              ELSIF sending AND enER = '0' AND enBusy = '0' THEN
                 sending := false;
                 val_xor <= dout;
                 state   <= exchange_wait;
               END IF;
 
             WHEN 1 =>
-              IF sending = false AND enER = '0' AND enBusy = '0' THEN
-                din  <= v2;
+              IF (NOT sending) AND enER = '0' AND enBusy = '0' THEN
+                din  <= buff_v2;
                 enER <= '1';
                 sending := true;
-              ELSIF sending = true AND enER = '1' AND enBusy = '0' THEN
+              ELSIF sending AND enER = '1' AND enBusy = '0' THEN
                 enER <= '0';
-              ELSIF sending = true AND enER = '0' AND enBusy = '0' THEN
+              ELSIF sending AND enER = '0' AND enBusy = '0' THEN
                 sending := false;
 
                 val_and <= dout;
@@ -117,13 +126,13 @@ BEGIN
               END IF;
 
             WHEN 2 =>
-              IF sending = false AND enER = '0' AND enBusy = '0' THEN
+              IF (NOT sending) AND enER = '0' AND enBusy = '0' THEN
                 din  <= "00000000";
                 enER <= '1';
                 sending := true;
-              ELSIF sending = true AND enER = '1' AND enBusy = '0' THEN
+              ELSIF sending AND enER = '1' AND enBusy = '0' THEN
                 enER <= '0';
-              ELSIF sending = true AND enER = '0' AND enBusy = '0' THEN
+              ELSIF sending AND enER = '0' AND enBusy = '0' THEN
                 sending := false;
                 val_or <= dout;
 

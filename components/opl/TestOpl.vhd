@@ -121,7 +121,7 @@ BEGIN
 				WHEN waiting =>
 					tick_count := tick_count + 1;
 					IF tick_count > 10 THEN
-						en <= '1';
+						-- en <= '1';
 						tick_count := 0;
 						state <= testCase;
 					END IF;
@@ -129,11 +129,12 @@ BEGIN
 				WHEN testCase =>
 					CASE sendCount IS
 						WHEN 0 =>
-							running := true;
-							v1 <= "00000000";
-							v2 <= "11111111";
-
-							IF running AND en = '1' AND busy = '1' THEN
+							IF (NOT running) AND en = '0' AND busy = '0' THEN
+								en <= '1';
+								running := true;
+								v1 <= "00000000";
+								v2 <= "11111111";
+							ELSIF running AND en = '1' AND busy = '1' THEN
 								-- On desactive pour eviter que le module
 								-- recommence immédiatement un échange une fois
 								-- finis.	
@@ -144,11 +145,12 @@ BEGIN
 								state <= waiting;
 							END IF;
 						WHEN 1 =>
-							running := true;
-							v1 <= "11110000";
-							v2 <= "00001111";
-
-							IF running AND en = '1' AND busy = '1' THEN
+							IF (NOT running) AND en = '0' AND busy = '0' THEN
+								en <= '1';
+								running := true;
+								v1 <= "11110000";
+								v2 <= "00001111";
+							ELSIF running AND en = '1' AND busy = '1' THEN
 								-- On desactive pour eviter que le module
 								-- recommence immédiatement un échange une fois
 								-- finis.	
@@ -159,11 +161,12 @@ BEGIN
 								state <= waiting;
 							END IF;
 						WHEN 2 =>
-							running := true;
-							v1 <= "11001100";
-							v2 <= "11100111";
-
-							IF running AND en = '1' AND busy = '1' THEN
+							IF (NOT running) AND en = '0' AND busy = '0' THEN
+								en <= '1';
+								running := true;
+								v1 <= "11001100";
+								v2 <= "11100111";
+							ELSIF running AND en = '1' AND busy = '1' THEN
 								-- On desactive pour eviter que le module
 								-- recommence immédiatement un échange une fois
 								-- finis.	
@@ -174,11 +177,13 @@ BEGIN
 								state <= waiting;
 							END IF;
 						WHEN 3 =>
-							running := true;
-							v1 <= "10101010";
-							v2 <= "11110000";
 
-							IF running AND en = '1' AND busy = '1' THEN
+							IF (NOT running) AND en = '0' AND busy = '0' THEN
+								running := true;
+								en <= '1';
+								v1 <= "10101010";
+								v2 <= "11110000";
+							ELSIF running AND en = '1' AND busy = '1' THEN
 								-- On desactive pour eviter que le module
 								-- recommence immédiatement un échange une fois
 								-- finis.	
@@ -189,11 +194,12 @@ BEGIN
 								state <= waiting;
 							END IF;
 						WHEN 4 =>
-							running := true;
-							v1 <= "00000000";
-							v2 <= "00000000";
-
-							IF running AND en = '1' AND busy = '1' THEN
+							IF (NOT running) AND en = '0' AND busy = '0' THEN
+								en <= '1';
+								running := true;
+								v1 <= "00000000";
+								v2 <= "00000000";
+							ELSIF running AND en = '1' AND busy = '1' THEN
 								-- On desactive pour eviter que le module
 								-- recommence immédiatement un échange une fois
 								-- finis.	
