@@ -3,16 +3,18 @@ GHDL=ghdl
 GHDLFLAGS=-fsynopsys --std=08
 MODULES=\
     er_1octet.o \
-	test_er_1octet_simple.o \
-	test_er_1octet_automate
+	MasterOpl.o \
+	SlaveOpl.o \
+	TestOpl.o \
+	TestOpl
 
-TIME=700ns
+TIME=5000ns
 PLOT=output
 
 all: test clean
 
 test: $(MODULES)
-	$(GHDL) -r $(GHDLFLAGS) test_er_1octet_automate \
+	$(GHDL) -r $(GHDLFLAGS) TestOpl \
 	--stop-time=${TIME} \
 	--vcd=${PLOT}.vcd
        
