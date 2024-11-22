@@ -123,7 +123,7 @@ BEGIN
 					-- This is the synchronization state
 					-- We are waiting for 10 clock cycles
 					tick_count := tick_count + 1;
-					IF tick_count >= 10 THEN
+					IF tick_count >= 15 THEN
 						tick_count := 0;
 						state <= exchange;
 					END IF;
@@ -234,7 +234,7 @@ BEGIN
 				WHEN exchange_wait =>
 					-- We are waiting for 3 clock cycles between each exchange
 					tick_count := tick_count + 1;
-					IF tick_count >= 3 THEN
+					IF tick_count >= 10 THEN
 						tick_count     := 0;
 						exchange_count := exchange_count + 1;
 
