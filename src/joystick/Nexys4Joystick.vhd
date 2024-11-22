@@ -68,12 +68,13 @@ ARCHITECTURE synthesis OF Nexys4Joystick IS
   SIGNAL x_joy : STD_LOGIC_VECTOR(9 DOWNTO 0);
   SIGNAL y_joy : STD_LOGIC_VECTOR(9 DOWNTO 0);
 BEGIN
+  -- Reset signal generation
   reset <= NOT btnC;
 
-  -- 16 leds éteintes
+  -- 13 leds down
   led(15 DOWNTO 3) <= (OTHERS => '0');
 
-  -- instanciation du composant Master
+  -- MasterJoystick instanciation
   MasterJoystick_inst : MasterJoystick
   PORT MAP(
     rst     => reset,
@@ -92,6 +93,7 @@ BEGIN
     btn_2   => led(1)
   );
 
+  -- All7Segments instanciation (7 segments display)
   All7Segments_inst : All7Segments
   PORT MAP(
     clk   => mclk,
